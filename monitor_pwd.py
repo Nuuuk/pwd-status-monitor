@@ -22,7 +22,7 @@ def fetch_webpage_content():
     return soup.get_text(separator="\n", strip=True)
 
 def analyze_and_diff(current_text, last_status):
-    client = genai.Client(api_key=GEMINI_API_KEY)
+    client = genai.Client(api_key=GEMINI_API_KEY, vertexai=True)
     prompt = f"""
     你是一个数据提取助手。请从以下 DOL Processing Times 网页文本中，找到关于 'Prevailing Wage Determination' (PWD) 的最新处理进度（如 OES, Non-OES, PERM 等对应的处理月份/日期）。
 
