@@ -51,7 +51,7 @@ def analyze_and_diff(current_text, last_status):
 
 def send_email(subject, body):
     msg = MIMEMultipart()
-    msg["From"] = SENDER_EMAIL
+    msg["From"] = "PWD Updates <{sender}>"
     msg["To"] = RECEIVER_EMAIL
     msg["Subject"] = subject
     msg.attach(MIMEText(body, "plain", "utf-8"))
