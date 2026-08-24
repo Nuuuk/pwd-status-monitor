@@ -9,7 +9,7 @@ An automated monitoring tool powered by Google Gemini API and GitHub Actions. It
 ## Features | 功能特性
 
 * **Automated Web Scraping / 自动抓取**：Daily scheduled HTML parsing via GitHub Actions (completely free). / 通过 GitHub Actions 每日定时运行，无需个人服务器。
-* **Intelligent Analysis / 智能比对**：Uses Google Gemini 2.5 Flash to accurately extract structured wage data (OEWS, Non-OEWS, Redeterminations, etc.) and detect changes against previous records. / 利用 Gemini 2.5 Flash 解析网页非结构化文本，对比历史记录并生成变动摘要。
+* **Intelligent Analysis / 智能比对**：Uses Google Gemini Flash to accurately extract structured wage data (OEWS, Non-OEWS, Redeterminations, etc.) and detect changes against previous records. / 利用 Gemini Flash 解析网页非结构化文本，对比历史记录并生成变动摘要。
 * **Email Alerts / 邮件通知**：Instant SMTP email notifications upon status changes or initial runs. / 检测到排期推进时，自动触发 SMTP 邮件推送。
 * **State Persistence / 状态存储**：Automatically commits and maintains `last_pwd_status.txt` in the repository. / 自动将最新状态写回 Git 仓库，实现无缝的历史比对。
 
