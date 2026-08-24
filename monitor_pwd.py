@@ -21,8 +21,9 @@ def fetch_webpage_content():
     soup = BeautifulSoup(resp.text, "html.parser")
     return soup.get_text(separator="\n", strip=True)
 
+# Switched to Google AI Studio API Key
 def analyze_and_diff(current_text, last_status):
-    client = genai.Client(api_key=GEMINI_API_KEY, vertexai=True)
+    client = genai.Client(api_key=GEMINI_API_KEY)
     prompt = f"""
     你是一个数据提取助手。请从以下 DOL Processing Times 网页文本中，找到关于 'Prevailing Wage Determination' (PWD) 的最新处理进度（如 OES, Non-OES, PERM 等对应的处理月份/日期）。
 
