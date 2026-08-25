@@ -1,13 +1,14 @@
 import os
+import time
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import requests
 from bs4 import BeautifulSoup
 from google import genai
-import time
 from google.genai.errors import APIError
 
+# 1. 环境变量配置
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL")
 EMAIL_APP_PASSWORD = os.environ.get("EMAIL_PASSWORD")
@@ -17,15 +18,17 @@ HISTORY_FILE = "last_pwd_status.txt"
 URL = "https://flag.dol.gov/processingtimes"
 
 def fetch_webpage_content():
+    """抓取 DOL 网页文本"""
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
     resp = requests.get(URL, headers=headers, timeout=30)
     resp.raise_for_status()
     soup = BeautifulSoup(resp.text, "html.parser")
     return soup.get_text(separator="\n", strip=True)
 
-# Switched to Google AI Studio API Key
 def analyze_and_diff(current_text, last_status):
+    """调用 Gemini 分析并内置指数退避重试"""
     client = genai.Client(api_key=GEMINI_API_KEY)
+    
     prompt = f"""
     你是一个数据提取助手。请从以下 DOL Processing Times 网页文本中，找到关于 'Prevailing Wage Determination' (PWD) 的最新处理进度（如 OES, Non-OES, PERM 等对应的处理月份/日期）。
 
@@ -46,26 +49,29 @@ def analyze_and_diff(current_text, last_status):
     ---EMAIL_BODY---
     [如果 HAS_CHANGED 为 TRUE，请用中文写一段简洁的邮件正文，说明哪些项目的排期推进了。如果为 FALSE，此处留空。]
     """
+
     max_retries = 3
-    delay = 5  # 初始等待 5 秒
+    delay = 5
+
     for attempt in range(max_retries):
         try:
             response = client.models.generate_content(
-            model="gemini-3.6-flash",
-            contents=prompt
-        )
-        return response.text
+                model="gemini-3.5-flash",
+                contents=prompt
+            )
+            return response.text
         except APIError as e:
             if attempt < max_retries - 1:
-                print(f"遇到临时错误 ({e.code})，正在等待 {delay} 秒后进行第 {attempt + 2} 次重试...")
+                print(f"遇到临时接口错误 ({e.code})，正在等待 {delay} 秒后重试...")
                 time.sleep(delay)
-                delay *= 2  # 指数退避：5s -> 10s -> 20s
+                delay *= 2
             else:
                 raise e
 
 def send_email(subject, body):
+    """发送邮件通知"""
     msg = MIMEMultipart()
-    msg["From"] = "PWD Updates <{sender}>"
+    msg["From"] = SENDER_EMAIL
     msg["To"] = RECEIVER_EMAIL
     msg["Subject"] = subject
     msg.attach(MIMEText(body, "plain", "utf-8"))
