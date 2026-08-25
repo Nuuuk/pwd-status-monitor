@@ -5,6 +5,8 @@ from email.mime.multipart import MIMEMultipart
 import requests
 from bs4 import BeautifulSoup
 from google import genai
+import time
+from google.genai.errors import APIError
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL")
@@ -44,11 +46,22 @@ def analyze_and_diff(current_text, last_status):
     ---EMAIL_BODY---
     [如果 HAS_CHANGED 为 TRUE，请用中文写一段简洁的邮件正文，说明哪些项目的排期推进了。如果为 FALSE，此处留空。]
     """
-    response = client.models.generate_content(
-        model="gemini-3.7-flash",
-        contents=prompt
-    )
-    return response.text
+    max_retries = 3
+    delay = 5  # 初始等待 5 秒
+    for attempt in range(max_retries):
+        try:
+            response = client.models.generate_content(
+            model="gemini-3.6-flash",
+            contents=prompt
+        )
+        return response.text
+        except APIError as e:
+            if attempt < max_retries - 1:
+                print(f"遇到临时错误 ({e.code})，正在等待 {delay} 秒后进行第 {attempt + 2} 次重试...")
+                time.sleep(delay)
+                delay *= 2  # 指数退避：5s -> 10s -> 20s
+            else:
+                raise e
 
 def send_email(subject, body):
     msg = MIMEMultipart()
