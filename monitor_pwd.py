@@ -45,7 +45,7 @@ def analyze_and_diff(current_text, last_status):
     [如果 HAS_CHANGED 为 TRUE，请用中文写一段简洁的邮件正文，说明哪些项目的排期推进了。如果为 FALSE，此处留空。]
     """
     response = client.models.generate_content(
-        model="gemini-3.6-flash",
+        model="gemini-3.7-flash",
         contents=prompt
     )
     return response.text
