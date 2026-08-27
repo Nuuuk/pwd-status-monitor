@@ -2,8 +2,8 @@ name: Monitor DOL PWD Status
 
 on:
   schedule:
-    # 每天 UTC 时间 13:00 (美东约早 9 点) 执行一次
-    - cron: '0 13 * * *'
+    # 每天 UTC 时间 14:27 (美东约早 9 点) 执行一次
+    - cron: '27 14 * * *'
   workflow_dispatch: # 支持网页端手动触发
 
 jobs:
