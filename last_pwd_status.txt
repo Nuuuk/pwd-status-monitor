@@ -5,7 +5,7 @@ OEWS_RECEIPT_DATE:
   H-2B: June 2026
   PERM: April 2026
 NON_OEWS_RECEIPT_DATE:
-  CW-1: N/A
+  CW-1: --
   H-1B: March 2026
   H-2B: May 2026
   PERM: March 2026
